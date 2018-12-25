@@ -31,6 +31,7 @@ export default class App extends React.Component {
       })
     ],
     fullscreenImageId: null,
+    isInputFocused: false
   }
   dismissFullscreenId = () => {
     this.setState({
