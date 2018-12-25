@@ -1,9 +1,22 @@
 import React from 'react';
-import { Constants } from 'expo';
-import { StyleSheet, Text, View, Alert, Image, TouchableHighlight } from 'react-native';
+import {
+  Constants
+} from 'expo';
+import {
+  StyleSheet,
+  BackHandler,
+  View,
+  Alert,
+  Image,
+  TouchableHighlight
+} from 'react-native';
 import Status from './components/Status';
 import MessageList from './components/MessageList';
-import { createLocationMessage, createTextMessage, createImageMessage} from './MessageUtils';
+import {
+  createLocationMessage,
+  createTextMessage,
+  createImageMessage
+} from './MessageUtils';
 
 export default class App extends React.Component {
   state = {
@@ -19,33 +32,41 @@ export default class App extends React.Component {
     ],
     fullscreenImageId: null,
   }
-  dismissFullscreenId=()=>{
-    this.setState({fullscreenImageId: null})
+  dismissFullscreenId = () => {
+    this.setState({
+      fullscreenImageId: null
+    })
   }
-  renderFullScreenImage = ()=> {
-    const {messages, fullscreenImageId} = this.state;
+  renderFullScreenImage = () => {
+    const {
+      messages,
+      fullscreenImageId
+    } = this.state;
 
-    const image = messages.find(message=>message.id === fullscreenImageId);
+    const image = messages.find(message => message.id === fullscreenImageId);
     if (!image) return null;
-    
-    const {uri} = image;
+
+    const {
+      uri
+    } = image;
     console.log(uri, fullscreenImageId)
 
     return (
       <TouchableHighlight style={styles.fullscreenOverlay} onPress={this.dismissFullscreenId} >
         <Image style={styles.fullscreenImage} source={{ uri }} />
-        {/* <Text style={{color:'blue'}}>yes o</Text> */}
       </TouchableHighlight>
     )
   }
-  handlePressMessage=({id, type})=>{
+  handlePressMessage = ({
+    id,
+    type
+  }) => {
     switch (type) {
       case 'text':
         Alert.alert(
           'Delete message?',
           'Are you sure you want to permanently delete this message?',
-          [
-            {
+          [{
               text: 'Cancel',
               style: 'cancel',
             },
@@ -53,39 +74,61 @@ export default class App extends React.Component {
               text: 'Delete',
               style: 'destructive',
               onPress: () => {
-                const {messages} = this.state;
-                this.setState({messages: messages.filter(message=>message.id != id)})
+                const {
+                  messages
+                } = this.state;
+                this.setState({
+                  messages: messages.filter(message => message.id != id)
+                })
               }
             }
           ]
         )
         break;
       case 'image':
-        this.setState({fullscreenImageId: id})
+        this.setState({
+          fullscreenImageId: id
+        })
         break;
       default:
         break;
     }
   }
   renderMessageList() {
-    const {messages} = this.state;
+    const {
+      messages
+    } = this.state;
     return (
       <View style={styles.content}>
         <MessageList messages={messages} onPressMessage={this.handlePressMessage} />
       </View>
     )
   }
-  renderInputMethodEditor(){
+  renderInputMethodEditor() {
     return (
       <View style={styles.inputMethodEditor}>
       </View>
     )
   }
-  renderToolbar(){
+  renderToolbar() {
     return (
       <View style={styles.toolbar}>
       </View>
     )
+  }
+  componentWillMount = () => {
+    this.subscription = BackHandler.addEventListener('hardwareBackPress', ()=>{
+      const {fullscreenImageId} = this.state;
+
+      if (fullscreenImageId) {
+        this.dismissFullscreenId();
+        return true;
+      }
+      return false;
+    })
+  }
+  componentWillUnmount() {
+    this.subscription.remove();
   }
   render() {
     return (
