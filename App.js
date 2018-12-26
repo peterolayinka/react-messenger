@@ -17,6 +17,7 @@ import {
   createTextMessage,
   createImageMessage
 } from './MessageUtils';
+import Toolbar from './components/Toolbar';
 
 export default class App extends React.Component {
   state = {
@@ -58,6 +59,41 @@ export default class App extends React.Component {
       </TouchableHighlight>
     )
   }
+
+  handlePressToolbarCamera = () => {
+
+  }
+
+  handlePressToolbarLocation = () => {
+    const { messages } = this.state;
+    // debugger;
+    console.log('location pressed')
+    navigator.geolocation.getCurrentPosition((position)=>{
+      const { coords: {latitude, longitude }} = position;
+      console.log(position)
+      this.setState({
+        messages: [
+          createLocationMessage({latitude, longitude}),
+          ...messages,
+        ],
+      })
+    },
+    error=> Alert.alert(error.message),
+    {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000})
+  }
+
+  handleChangeFocus = (isFocused) => {
+    this.setState({ isInputFocused: isFocused})
+  }
+
+  handleSubmit = (text) => {
+    const { messages } = this.state;
+
+    this.setState({
+      messages: [createTextMessage(text), ...messages],
+    })
+  }
+
   handlePressMessage = ({
     id,
     type
@@ -88,7 +124,7 @@ export default class App extends React.Component {
         break;
       case 'image':
         this.setState({
-          fullscreenImageId: id
+          fullscreenImageId: id, isInputFocused: false,
         })
         break;
       default:
@@ -112,8 +148,17 @@ export default class App extends React.Component {
     )
   }
   renderToolbar() {
+    const { isInputFocused } = this.state;
+
     return (
       <View style={styles.toolbar}>
+        <Toolbar 
+          isFocused={isInputFocused}
+          onSubmit={this.handleSubmit}
+          onChangeFocus={this.handleChangeFocus}
+          onPressCamera={this.handlePressToolbarCamera}
+          onPressLocation={this.handlePressToolbarLocation}
+        />
       </View>
     )
   }
@@ -162,7 +207,8 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.04)',
+    width: '100%',
+    borderTopColor: 'rgba(0,0,0,0.1)',
     backgroundColor: 'white',
   },
   fullscreenOverlay: {

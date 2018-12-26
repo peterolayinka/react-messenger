@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const ToolbarButton = ({ title, onPress })=>{
-	<TouchableOpacity onPress={onPress}>
-		<Text style={styles.onPress}>
-			{title}
-		</Text>
-	</TouchableOpacity>
+	return (
+		<TouchableOpacity onPress={onPress}>
+			<Text style={styles.button}>
+				{title}
+			</Text>
+		</TouchableOpacity>
+	)
 }
 
 ToolbarButton.propTypes = {
@@ -82,8 +84,8 @@ export default class Toolbar extends React.Component {
 				{/* { USe emoji for ICON} */}
 				<ToolbarButton title={'C'} onPress={onPressCamera} />
 				<ToolbarButton title={'L'} onPress={onPressLocation} />
-				<View style={styles.container}>
-					<Text style={styles.input}
+				<View style={styles.inputContainer}>
+					<TextInput style={styles.input}
 						underlineColorAndroid={'transparent'}
 						placeholder={'Type something...'}
 						blurOnSubmit={false}
@@ -97,7 +99,7 @@ export default class Toolbar extends React.Component {
 					/>
 				</View>
 			</View>
-		)
+		);
 	}
 }
 
@@ -120,11 +122,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: 'row',
 		borderWidth: 1,
-		borderColor: 'rgba(0,0,0,0.04)',
+		borderColor: 'rgba(0,0,0,0.08)',
 		borderRadius: 16,
 		paddingVertical: 4,
 		paddingHorizontal: 12,
-		backgroundColor: 'rgba(0,0,0,0.02)',
+		backgroundColor: 'rgba(0,0,0,0.03)',
 	},
 	input: {
 		flex: 1,
